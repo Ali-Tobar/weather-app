@@ -1,0 +1,83 @@
+/* Load the regular Arabic font. */
+@font-face {
+  font-family: "IBM";
+  src: url("/Fonts/IBMPlexSansArabic-Regular.ttf") format("truetype");
+  font-weight: 400;
+}
+
+/* Load the bold Arabic font. */
+@font-face {
+  font-family: "IBM";
+  src: url("/Fonts/IBMPlexSansArabic-Bold.ttf") format("truetype");
+  font-weight: 700;
+}
+
+/* Base resets */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #1e75cd;
+  font-family: "IBM", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Vibrant Cyan Sky backdrop matching the uploaded image */
+.app-container {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px 16px;
+  background:
+    radial-gradient(ellipse at 20% 15%, #a9f4fd 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 85%, #2d98bc 0%, transparent 55%),
+    linear-gradient(135deg, #73e9fb 0%, #63ddf5 40%, #39add1 100%);
+}
+
+/* Ambient soft cloud light and sunny glow orbs */
+.app-container::before,
+.app-container::after {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.app-container::before {
+  top: -80px;
+  right: -60px;
+  width: 380px;
+  height: 380px;
+  background: rgba(255, 255, 255, 0.65);
+  filter: blur(85px);
+}
+
+.app-container::after {
+  bottom: -100px;
+  left: -80px;
+  width: 420px;
+  height: 420px;
+  background: rgba(253, 208, 64, 0.28); /* Warm sun glow */
+  filter: blur(95px);
+}
+
+/* Typography font inheritance */
+.weather-card .MuiTypography-root {
+  color: inherit;
+  font-family: "IBM", sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-card {
+    transition: none;
+  }
+}
