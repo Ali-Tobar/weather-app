@@ -96,6 +96,17 @@ Extracted all raw SVG icons from `WeatherCard.jsx` into a dedicated `WeatherIcon
 
 ---
 
+## 💡 Learning Milestone: My First API Integration
+
+This project was my first hands-on experience integrating a real-world third-party REST API into a React application. Moving away from static mock data helped me understand:
+
+- **The Request/Response Cycle**: How HTTP requests work in practice, passing query parameters (`lat`, `lon`, `appid`, `units`), and reading response objects.
+- **Asynchronous JavaScript**: Managing Promises with `async/await` and handling network delays cleanly using `loading` states.
+- **Data Normalization**: Realizing that API data isn't always ready for immediate display—requiring data cleanup, unit conversions (`m/s` to `km/h`), and edge-case handling before passing it to UI components.
+- **Defensive UI Rendering**: Using optional chaining (`?.`) and fallback values to prevent crashes before asynchronous data arrives.
+
+---
+
 ## 🛠️ Tech Stack
 
 - **React 19**
@@ -132,7 +143,10 @@ npm run dev
 ```
 
 ---
+## 🛠️ Notes & Acknowledgments
 
+- **Custom SVG Icons**: Generative AI was used to assist in generating the raw mathematical SVG vector paths and glow filters (`SunIcon`, `MoonIcon`, etc.) to achieve a high-definition aesthetic without heavy external icon packages. All icons were then structured and modularized into a dedicated `WeatherIcons.jsx` component.
+---
 ## 👨‍💻 Author
 
 **Ali Tobar**  
