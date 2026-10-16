@@ -14,6 +14,7 @@ import { WeatherVisual } from "./WeatherIcons";
 import "./WeatherCard.css";
 
 function WeatherCard({ locale, onLanguageToggle }) {
+  // Lazy state initialization: restore last chosen city from localStorage
   const [selectedCity, setSelectedCity] = useState(() => {
     const savedId = localStorage.getItem("weather_city");
     const found = CITIES.find((c) => c.id === savedId);
@@ -23,6 +24,7 @@ function WeatherCard({ locale, onLanguageToggle }) {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch weather data with race condition protection
   useEffect(() => {
     let isCancelled = false;
     localStorage.setItem("weather_city", selectedCity.id);
@@ -36,16 +38,18 @@ function WeatherCard({ locale, onLanguageToggle }) {
       })
       .catch((error) => {
         if (!isCancelled) {
-          console.error("حدث خطأ في جلب الطقس:", error);
+          console.error("Failed to fetch weather data:", error);
           setLoading(false);
         }
       });
 
+    // Cleanup: cancel pending update if city or language changes
     return () => {
       isCancelled = true;
     };
   }, [selectedCity, locale]);
 
+  // Format today's date dynamically based on active locale
   const today = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
     weekday: "long",
     year: "numeric",
@@ -55,7 +59,7 @@ function WeatherCard({ locale, onLanguageToggle }) {
 
   return (
     <div dir={locale === "ar" ? "rtl" : "ltr"} className="weather-card">
-      {/* 1. الشريط العلوي: أزرار اختيار المدن + زر تبديل اللغة بأيقونة */}
+      {/* 1. Top Toolbar: City selection chips & language toggle */}
       <div className="top-toolbar">
         <div className="cities-bar">
           {CITIES.map((city) => (
@@ -75,7 +79,7 @@ function WeatherCard({ locale, onLanguageToggle }) {
           ))}
         </div>
 
-        {/* زر تبديل اللغة بأيقونة LanguageIcon */}
+        {/* Language toggle button */}
         <button
           type="button"
           className="lang-toggle-btn"
@@ -89,7 +93,7 @@ function WeatherCard({ locale, onLanguageToggle }) {
 
       <hr className="divider subtle-divider" />
 
-      {/* 2. شاشة التحميل */}
+      {/* 2. Loading State: Spinner while fetching data */}
       {loading ? (
         <div className="weather-loading">
           <div className="loading-spinner"></div>
@@ -99,7 +103,7 @@ function WeatherCard({ locale, onLanguageToggle }) {
         </div>
       ) : (
         <>
-          {/* 3. رأس البطاقة: اسم المدينة بأيقونة Location والتاريخ ووصف الطقس */}
+          {/* 3. Card Header: City name, localized date, and condition badge */}
           <div className="card-header">
             <div className="header-text">
               <div className="city-row">
@@ -119,7 +123,7 @@ function WeatherCard({ locale, onLanguageToggle }) {
 
           <hr className="divider" />
 
-          {/* 4. تفاصيل درجة الحرارة والأيقونة عالية الوضوح */}
+          {/* 4. Card Body: Main temperature, feels-like, 24h min/max, and SVG icon */}
           <div className="card-body">
             <div className="temp-info">
               <div className="temp-row">
@@ -131,7 +135,7 @@ function WeatherCard({ locale, onLanguageToggle }) {
                 </span>
               </div>
 
-              {/* درجات الحرارة الصغرى والكبرى مع أيقونات الأسهم */}
+              {/* 24-hour Min & Max temperature badge */}
               <div className="min-max-badge">
                 <span className="min-tag">
                   <ArrowDownwardIcon className="arrow-icon arrow-down" fontSize="small" />
@@ -144,13 +148,13 @@ function WeatherCard({ locale, onLanguageToggle }) {
               </div>
             </div>
 
-            {/* أيقونة الطقس البصرية عالية الوضوح */}
+            {/* Dynamic vector SVG weather icon */}
             <div className="icon-wrapper">
               <WeatherVisual iconCode={weather?.icon} />
             </div>
           </div>
 
-          {/* 5. شبكة المقاييس بأيقونات Material UI الاحترافية */}
+          {/* 5. Metrics Grid: Material UI icons for weather indicators */}
           <div className="metrics-grid">
             <div className="metric-card">
               <WaterDropIcon className="metric-mui-icon drop-color" />

@@ -1,5 +1,6 @@
 
 
+// Standalone vector SVG weather icons with custom gradients and glow effects
 export function SunIcon(props) {
   return (
     <svg
@@ -149,7 +150,7 @@ export function RainIcon(props) {
   );
 }
 
-// مكون اختيار الأيقونة المناسبة بناءً على كود الطقس القادم من الـ API
+// Visual router: maps OpenWeatherMap icon code to corresponding SVG component
 export function WeatherVisual({ iconCode, ...props }) {
   if (iconCode === "01d") return <SunIcon {...props} />;
   if (iconCode === "01n") return <MoonIcon {...props} />;

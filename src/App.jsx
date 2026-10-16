@@ -4,17 +4,17 @@ import WeatherCard from "./Components/WeatherCard";
 import "./App.css";
 
 function App() {
-  // حفظ واسترجاع اللغة من localStorage لتذكر اختيار المستخدم
+  // Lazy state initialization: read saved language once on mount
   const [locale, setLocale] = useState(() => {
     return localStorage.getItem("weather_locale") || "ar";
   });
 
-  // تحديث التخزين عند تغير اللغة
+  // Persist language selection to localStorage on changes
   useEffect(() => {
     localStorage.setItem("weather_locale", locale);
   }, [locale]);
 
-  // دالة تبديل اللغة
+  // Toggle between Arabic and English locales
   function handleLanguageToggle() {
     setLocale((prev) => (prev === "ar" ? "en" : "ar"));
   }
