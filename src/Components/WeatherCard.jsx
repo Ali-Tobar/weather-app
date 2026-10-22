@@ -1,5 +1,6 @@
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import AirIcon from "@mui/icons-material/Air";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
@@ -9,11 +10,21 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
-import { getCurrentWeather, CITIES } from "../services/weatherApi";
+import { CITIES } from "../services/weatherApi";
+import { fetchWeather } from "../features/weatherApi/weatherApiSlice";
 import { WeatherVisual } from "./WeatherIcons";
 import "./WeatherCard.css";
 
 function WeatherCard({ locale, onLanguageToggle }) {
+  const dispatch = useDispatch();
+
+  // Read weather data, loading state, and error message directly from Redux
+  const {
+    weatherData: weather,
+    isLoading: loading,
+    error,
+  } = useSelector((state) => state.weather);
+
   // Lazy state initialization: restore last chosen city from localStorage
   const [selectedCity, setSelectedCity] = useState(() => {
     const savedId = localStorage.getItem("weather_city");
@@ -21,33 +32,11 @@ function WeatherCard({ locale, onLanguageToggle }) {
     return found || CITIES[0];
   });
 
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Fetch weather data with race condition protection
+  // Fetch weather data via Redux Thunk whenever selected city or locale changes
   useEffect(() => {
-    let isCancelled = false;
     localStorage.setItem("weather_city", selectedCity.id);
-
-    getCurrentWeather(selectedCity, locale)
-      .then((data) => {
-        if (!isCancelled) {
-          setWeather(data);
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        if (!isCancelled) {
-          console.error("Failed to fetch weather data:", error);
-          setLoading(false);
-        }
-      });
-
-    // Cleanup: cancel pending update if city or language changes
-    return () => {
-      isCancelled = true;
-    };
-  }, [selectedCity, locale]);
+    dispatch(fetchWeather({ city: selectedCity, locale }));
+  }, [dispatch, selectedCity, locale]);
 
   // Format today's date dynamically based on active locale
   const today = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
@@ -69,7 +58,6 @@ function WeatherCard({ locale, onLanguageToggle }) {
               className={`city-chip ${selectedCity.id === city.id ? "active" : ""}`}
               onClick={() => {
                 if (selectedCity.id !== city.id) {
-                  setLoading(true);
                   setSelectedCity(city);
                 }
               }}
@@ -98,8 +86,24 @@ function WeatherCard({ locale, onLanguageToggle }) {
         <div className="weather-loading">
           <div className="loading-spinner"></div>
           <Typography className="loading-text">
-            {locale === "ar" ? "جارٍ جلب حالة الطقس" : "Fetching weather..."}
+            {locale === "ar" ? "جارٍ جلب حالة الطقس..." : "Fetching weather..."}
           </Typography>
+        </div>
+      ) : error ? (
+        /* Error State with Retry Button */
+        <div className="weather-loading" style={{ textAlign: "center" }}>
+          <Typography style={{ color: "#ffcdd2", marginBottom: "12px" }}>
+            {locale === "ar"
+              ? `تعذر جلب البيانات: ${error}`
+              : `Failed to load weather: ${error}`}
+          </Typography>
+          <button
+            type="button"
+            className="city-chip active"
+            onClick={() => dispatch(fetchWeather({ city: selectedCity, locale }))}
+          >
+            {locale === "ar" ? "إعادة المحاولة" : "Retry"}
+          </button>
         </div>
       ) : (
         <>
