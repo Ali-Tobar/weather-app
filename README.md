@@ -32,18 +32,44 @@ The project follows the **Separation of Concerns (SoC)** principle to keep the U
 weather-app/
 ├── public/                 # Static fonts (IBM Plex Sans Arabic)
 ├── src/
+│   ├── app/
+│   │   └── store.js             # Central Redux store configuration
+│   ├── features/
+│   │   └── weatherApi/
+│   │       └── weatherApiSlice.js # Async Thunk, weather slice & extraReducers
 │   ├── Components/
-│   │   ├── WeatherCard.jsx # Main weather card & internal state
-│   │   ├── WeatherCard.css # Glassmorphism styling & animations
-│   │   └── WeatherIcons.jsx# Isolated SVG icons & visual routing
+│   │   ├── WeatherCard.jsx      # Weather UI connected via useSelector & useDispatch
+│   │   ├── WeatherCard.css      # Glassmorphism styling & animations
+│   │   └── WeatherIcons.jsx     # Modular SVG weather icons
 │   ├── services/
-│   │   └── weatherApi.js   # Axios client, data normalization & calculations
-│   ├── App.jsx             # App root: language state & direction handling
-│   ├── main.jsx            # React root & MUI ThemeProvider
-│   └── App.css             # Global background & layout styles
-├── .env                    # Secret API key (ignored by git)
+│   │   └── weatherApi.js        # Axios instance, cities config & forecast calculations
+│   ├── App.jsx                  # Root layout, language state & direction handling
+│   ├── main.jsx                 # React root wrapped in Redux Provider & MUI Theme
+│   └── App.css                  # Global layout styles
+├── .env                         # Secret API key (git-ignored)
 └── package.json
 ```
+
+---
+
+## 🔄 State Management Refactor: Local State to Redux Toolkit
+
+This branch (`feature/redux-weather`) represents an architectural migration from local React state (`useState` & `useEffect`) to a centralized store architecture powered by **Redux Toolkit (RTK)** and **React-Redux**.
+
+### Why the Refactor?
+- **Decoupling Business Logic:** Extracted asynchronous network requests and state coordination from UI components into a dedicated Redux Slice (`weatherApiSlice.js`).
+- **Standardized Async Lifecycle:** Replaced manual boolean loading flags with `createAsyncThunk`, leveraging automatic promise lifecycle actions (`pending`, `fulfilled`, `rejected`).
+- **Single Source of Truth:** Centralized weather data, loading spinners, and network error messages into a single global Store (`src/app/store.js`).
+- **Preserved Domain Logic:** Maintained the modular SVG system (`WeatherIcons.jsx`), localized date formatters, and the 24-hour min/max forecast algorithm intact.
+
+### Architectural Comparison
+
+| Aspect | Initial Version (`main`) | Refactored Version (`feature/redux-weather`) |
+|---|---|---|
+| **State Scope** | Local component state via `useState` | Centralized global store via `createSlice` |
+| **Async Fetching** | `useEffect` with cleanup (`isCancelled`) | `createAsyncThunk` handled via `extraReducers` |
+| **Component Role** | Managed fetch cycles and internal states | Pure presentation & action dispatching |
+| **Error Handling** | Local `try/catch` with manual error state | Integrated `rejectWithValue` with `extraReducers` |
 
 ---
 
@@ -110,6 +136,7 @@ This project was my first hands-on experience integrating a real-world third-par
 ## 🛠️ Tech Stack
 
 - **React 19**
+- **Redux Toolkit (RTK)** & **React-Redux**
 - **Vite**
 - **Axios**
 - **Material UI (MUI)**
