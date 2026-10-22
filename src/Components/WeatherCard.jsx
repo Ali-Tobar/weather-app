@@ -123,7 +123,7 @@ function WeatherCard({ locale, onLanguageToggle }) {
 
           <hr className="divider" />
 
-          {/* 4. Card Body: Main temperature, feels-like, 24h min/max, and SVG icon */}
+          {/*  Card Body: Main temperature, feels-like, 24h min/max, and SVG icon */}
           <div className="card-body">
             <div className="temp-info">
               <div className="temp-row">
